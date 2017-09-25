@@ -2,12 +2,14 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: vagrant
+  provider:
+    name: virtualbox
 lint:
   name: yamllint
 platforms:
-  - name: jinja-test
-    image: centos:7
+  - name: instance
+    box: ubuntu/xenial64
 provisioner:
   name: ansible
   lint:
@@ -16,7 +18,5 @@ scenario:
   name: default
 verifier:
   name: testinfra
-  options:
-    v: 1
   lint:
     name: flake8

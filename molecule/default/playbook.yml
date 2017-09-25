@@ -1,13 +1,36 @@
 ---
-- hosts: all
+- name: Converge
+  hosts: all
+  gather_facts: False
   tasks:
-  - name: Create files for test results 1
-    copy:
-      content: "{{ 'test' | a_filter }}"
-      dest: /tmp/result1
-  - name: Create files for test results 2
-    copy:
-      content: "{{ 'test' | another_filter('the','filters') }}"
-      dest: /tmp/result2
+    - name: Install python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      become: True
+      changed_when: False
+    - name: Create files for test results 1
+      copy:
+        content: "{{ 'test' | a_filter }}"
+        dest: /tmp/result1
+    - name: Create files for test results 2
+      copy:
+        content: "{{ 'test' | b_filter('the','filters') }}"
+        dest: /tmp/result2
+    - name: Demostrate permutations filter
+      copy:
+        content: "{{ [1,2,3,4,5] | permutations(2) | list }}"
+        dest: /tmp/result3
+    - name: Demostrate combinations filter
+      copy:
+        content: "{{ [1,2,3,4,5] | combinations(2) | list }}"
+        dest: /tmp/result4
+    - name: Demostrate zip filter
+      copy:
+        content: "{{ [1,2,3,4,5] | zip(['a','b','c','d','e','f']) | list }}"
+        dest: /tmp/result5
+
+
+
+- name: Converge
+  hosts: all
   roles:
     - role: jinja2-ansible-test
