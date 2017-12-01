@@ -27,8 +27,22 @@
       copy:
         content: "{{ [1,2,3,4,5] | zip(['a','b','c','d','e','f']) | list }}"
         dest: /tmp/result5
-
-
+    - name: set a variable for inclusion
+      set_fact: my_groups='all'
+    - name: Demonstrate the groups variables
+      copy:
+        content: "{{ groups[my_groups] | list }}"
+        dest: /tmp/result6
+    - name: Demonstrate the groups variables
+      vars:
+        site_data_mountpoints:
+          - /tmp/a
+          - /tmp/b
+        platform_public_kafka_cluster_kube_namespace: 'default'
+        platform_public_kafka_cluster_name: 'public_kafka'
+      copy:
+        content: "{{ site_data_mountpoints | map('regex_replace', '(.*)', '\\1/platform/'+platform_public_kafka_cluster_kube_namespace+'/kafka-cluster/'+platform_public_kafka_cluster_name) | list }}"
+        dest: /tmp/result7
 
 - name: Converge
   hosts: all
